@@ -45,7 +45,6 @@ module.exports.Router = class Routes extends Router {
                             return res.status(500).send({ "message": "Email already taken" });
                         else {
                             // Insert data in database
-                            const emailToken = crypto.randomBytes(64).toString('hex')
                             await mysql.createQuery("INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)", 
                             [
                                 userId,
@@ -56,7 +55,7 @@ module.exports.Router = class Routes extends Router {
                                 if(err) res.status(500).json(err)
                                 // Everything is good
                                 else {
-                                    jwt.sign(userId, process.env.EMAIL_SECRET, { expiresIn: '10m' }, (err, emailToken) => {
+                                    jwt.sign(userId, process.env.EMAIL_SECRET,  (err, emailToken) => {
                                             const url = `http://${req.headers.host}/verify-email/${emailToken}`
                                             
                                             transporter.sendMail({
@@ -72,11 +71,10 @@ module.exports.Router = class Routes extends Router {
                                                 `
                                             }, (err, info) => {
                                                 if(err) return res.send(err)
-                                                res.send(info)
                                             })
                                         }
                                     )
-                                    res.json(200)
+                                    res.status(200).send("Check emails for account activation")
                                 }
                             })
                         }
