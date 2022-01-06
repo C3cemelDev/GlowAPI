@@ -46,12 +46,11 @@ module.exports.Router = class Routes extends Router {
                         else {
                             // Insert data in database
                             const emailToken = crypto.randomBytes(64).toString('hex')
-                            await mysql.createQuery("INSERT INTO users (id, username, email, emailToken, password) VALUES (?, ?, ?, ?, ?)", 
+                            await mysql.createQuery("INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)", 
                             [
                                 userId,
                                 req.body.username,
                                 req.body.email,
-                                emailToken,
                                 md5(req.body.password)
                             ], (err, resu) => {
                                 if(err) res.status(500).json(err)
