@@ -56,15 +56,7 @@ module.exports.Router = class Routes extends Router {
                                 if(err) res.status(500).json(err)
                                 // Everything is good
                                 else {
-                                    jwt.sign(
-                                        {
-                                            user: userId
-                                        },
-                                        process.env.EMAIL_SECRET,
-                                        {
-                                            expiresIn: '10m'
-                                        },
-                                        (err, emailToken) => {
+                                    jwt.sign(userId, process.env.EMAIL_SECRET, { expiresIn: '10m' }, (err, emailToken) => {
                                             const url = `http://${req.headers.host}/verify-email/${emailToken}`
                                             
                                             transporter.sendMail({
@@ -105,9 +97,7 @@ module.exports.Router = class Routes extends Router {
                         if(!resu[0].isVerified) return res.status(401).send({ "message": "Account not activated" })
                         const user = JSON.parse(JSON.stringify(resu[0]))
                         const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-                        res.json({
-                            accessToken: accessToken,
-                        })
+                        res.json(accessToken)
                     }
                     else
                         return res.status(401).send({ "message": "Invalid credentials" })
