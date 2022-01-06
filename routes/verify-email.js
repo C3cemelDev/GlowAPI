@@ -8,19 +8,16 @@ module.exports.Router = class Routes extends Router {
 
         this.get('/:token', async (req, res, next) => {
             try {
-                jwt.verify(req.params.token, process.env.EMAIL_SECRET, (err, decoded) => {
-                    console.log(decoded)
-                    // await mysql.createQuery('UPDATE users SET isVerified=1 WHERE id=?', [user.id], (err, resu) => {
-                    //     if(err) res.send(err)
-                    //     console.log(user.id)
-                    //     res.send(user.id)
-                    // })
+                const decoded = jwt.verify(req.params.token, process.env.EMAIL_SECRET)
+                console.log(decoded)
+                await mysql.createQuery('UPDATE users SET isVerified=1 WHERE id=?', [decoded], (err, resu) => {
+                    if(err) res.send(err)
+                    res.send({"id": decoded.user, "isVerified": true})
                 })
                 
             } catch (error) {
                 res.status(500)
             }
-            // return res.redirect('/auth/login')
         })
         
     }
